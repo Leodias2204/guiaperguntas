@@ -28,7 +28,7 @@ app.use(bodyParser.json())
 // Rotas
 app.get("/",(req,res) => {
     // Váriaveis criadas para serem vizualizadas diretamente no HTML.
-    // raw: true >>> Significa que somente receberá os dados principais da tabela
+
     Pergunta.findAll({raw: true, order:[
         ['id', 'DESC']]}).then(pergunta => {
         res.render('index', {
@@ -36,7 +36,7 @@ app.get("/",(req,res) => {
         })
     })
     // findALL  >>>> Equivalente ao SELECT * FROM + NOME DA TABELA 
-})
+}) // raw: true >>> Significa que somente receberá os dados principais da tabela
 
 app.get("/perguntar",(req,res) => {
     res.render("perguntar")
@@ -59,7 +59,20 @@ app.post("/salvarpergunta", (req, res) => {
     })
 })
 
-
-app.listen(8080,() => {
-    console.log("App Rodando!!")
+app.get('/pergunta/:id',(req, res) => {
+    let id = req.params.id;
+    Pergunta.findOne({  //Busca especifica equivalente a Select * from table where id= params
+        where: {id: id}
+    }).then(pergunta => {
+        if (pergunta != undefined) {  //Pergunta Encontrada
+            res.render('pergunta',{
+                pergunta:pergunta
+            })
+        }else{                       //Pergunta Não encontrada
+            res.redirect('/')
+        }
+    }) 
 })
+
+
+app.listen(8080,() =>{console.log('App Rodando!!')})
